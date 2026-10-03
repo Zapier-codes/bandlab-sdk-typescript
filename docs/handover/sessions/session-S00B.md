@@ -1,4 +1,5 @@
 # Session S00B — Rules correction: in-place revamp
+> **Superseded by S00C.** The MCP scope and the relocation approach described here were cancelled by the owner. See `session-S00C.md`.
 - Date: 2026-10-03
 - Status: DONE
 - Patch: s00b-in-place-revamp-rules.patch (stacked on S00; apply S00 first if not already applied)

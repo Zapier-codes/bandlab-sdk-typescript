@@ -10,18 +10,18 @@
 
 ```yaml
 NEXT_SESSION: S01
-NEXT_SESSION_TITLE: Detach from Stainless, package identity, tooling baseline, plan skeleton
+NEXT_SESSION_TITLE: Baseline + coverage tooling
 NEXT_SESSION_BRIEF: docs/handover/TASKS.md  ->  section "S01"
-LAST_COMPLETED: S00B
-LAST_COMPLETED_MARKER_COMMIT_SUBJECT: "handover: complete S00B"
-LAST_PATCH_NAME: s00b-in-place-revamp-rules.patch
+LAST_COMPLETED: S00C
+LAST_COMPLETED_MARKER_COMMIT_SUBJECT: "handover: complete S00C"
+LAST_PATCH_NAME: s00c-sdk-coverage-handover.patch
 STATUS: READY
-BLOCKERS: none
+BLOCKERS: none for S01. S03 is blocked until the owner supplies evidence (captures / spec / confirmation) for the missing endpoints.
 ```
 
 **Sanity check at session start:**
 ```bash
-git log --oneline | grep "handover: complete S00B"   # must find the marker commit
+git log --oneline | grep "handover: complete S00C"   # must find the marker commit
 ```
 If the marker for `LAST_COMPLETED` is **not** in `git log`, the previous patch was never applied/pushed.
 **Stop and tell the owner** — do not continue on top of a missing session.
@@ -30,22 +30,22 @@ If the marker for `LAST_COMPLETED` is **not** in `git log`, the previous patch w
 
 ## 2. What this project is, and the rules
 
-This repo (`Zapier-codes/bandlab-sdk-typescript`, the owner's fork) is being **revamped in place** into a private BandLab MCP server,
-following the target architecture in [`docs/handover/ARCHITECTURE.md`](docs/handover/ARCHITECTURE.md).
-The architecture tree **is the repo root**. We move what already works into the plan's paths, extend what is partial, and add what is missing.
+**Update the existing BandLab TypeScript SDK so it covers every BandLab API capability**, including those it is missing today
+(messaging, audio/samples, mix/effects, and a handful of missing operations — see `docs/handover/COVERAGE.md`).
+This is **not** an MCP server and **not** a restructure.
 
 | # | Rule |
 |---|------|
-| D1 | **This is the owner's own project. Everything is editable, including `src/`.** The old "generated SDK is read-only" rule is void. |
-| D2 | **No `mcp/` folder.** Work happens in the existing `src/` and repo root. |
-| D3 | Revamp, don't rewrite: relocate working code with `git mv` into plan paths. **Moves and edits are separate commits.** Keep the build green. |
-| D4 | **Python is never part of the production runtime.** It lives only in `research/` and `scripts/`. |
-| D5 | Every tool is classified **Read / Write / Privileged / Destructive / Bulk** and all dispatch goes through the permission layer. |
-| D6 | Bulk tools are **dry-run by default**, capped, rate-limited and audit-logged. |
-| D7 | **Stainless is detached** (no regeneration). Remove its scaffolding in S01, but **only after the OpenAPI spec is snapshotted** into `research/` (the Prism mock reads its URL from `.stats.yml`). |
-| D8 | `src/index.ts` stays the **library barrel** (existing public surface). The MCP stdio entry is `src/server.ts`, exposed via `package.json` `bin`. *(Deviation from the plan tree; owner may overrule.)* |
-| D9 | Wire paths to BandLab stay exactly as the server expects. Internal names may be normalised freely. |
-| D10 | Never invent endpoints. Unproven ones are flagged `unverified` and fail with a typed `NotImplementedError`. |
+| D1 | **This is the owner's own project. Everything is editable, including `src/`.** |
+| D2 | **Keep the existing tree. Extend it.** No relocating, renaming or splitting existing files; no new top-level directories. New code goes beside its neighbours (`ARCHITECTURE.md` "Where new things go"). |
+| D3 | **Scope is SDK API coverage only.** Do not build an MCP server, tools, workflows, permission layers, bulk automation or any registry. Those were in the first plan and are cancelled. |
+| D4 | **Additive only.** Every existing `client.*` call keeps working unchanged. |
+| D5 | Python is allowed only in `scripts/research/` for evidence tooling. It is never shipped and never imported by `src/`. |
+| D6 | **Never invent an endpoint or response shape.** Every new endpoint needs evidence (capture, spec, or owner confirmation) and a status (`spec` / `captured` / `unverified` / `live-ok` / `missing`). |
+| D7 | **Sessions cannot reach `bandlab.com`** from the sandbox. Evidence comes from the owner. Never claim an endpoint is live-verified. |
+| D8 | Stainless/release scaffolding is left untouched. Do not run or merge codegen (it would overwrite hand edits). |
+| D9 | Wire paths stay exactly as the server expects; follow existing naming conventions in neighbouring files. |
+| D10 | **Combined patch rule:** the patch is always built from `origin/main`, so it contains every commit not yet pushed. The owner applies one patch. |
 
 ---
 
@@ -53,32 +53,35 @@ The architecture tree **is the repo root**. We move what already works into the 
 
 | File | Purpose |
 |------|---------|
-| `HANDOVER.md` | This file. Pointer + rules + protocol summary. |
-| `docs/handover/ARCHITECTURE.md` | Full target tree and diagrams (the repo root layout). |
-| `docs/handover/EXISTING-VS-PLAN.md` | **What exists, what moves where, what is new.** |
-| `docs/handover/TASKS.md` | All work divided into session-sized chunks (S01…S18) with acceptance criteria. |
-| `docs/handover/PROTOCOL.md` | Session start/finish checklist and the **git am patch process**. |
-| `docs/handover/GAPS.md` | Planned capabilities not covered by existing code (need research). |
+| `HANDOVER.md` | This file. Pointer + rules. |
+| `docs/handover/ARCHITECTURE.md` | Existing tree (kept), where new code goes, the per-endpoint recipe, constraints. |
+| `docs/handover/COVERAGE.md` | 17-domain coverage matrix + register of missing capabilities (G01…). |
+| `docs/handover/endpoint-inventory.tsv` | Snapshot of the 123 existing endpoints (verb, path, accessor). |
+| `docs/handover/TASKS.md` | Session chunks S01–S10, status board, implementation recipe. |
+| `docs/handover/PROTOCOL.md` | Session start/finish checklist, combined-patch rule, git am commands. |
+| `docs/handover/ORIGINAL-PLAN-TREE.md` | Original MCP plan, kept as a domain checklist only. Layout is cancelled. |
 | `docs/handover/sessions/` | One audit file per completed session. |
-| `scripts/handover/make-patch.sh` | Builds the downloadable `.patch` file. |
+| `scripts/handover/make-patch.sh` | Builds the combined `.patch`. |
 
 ---
 
 ## 4. Session audit index  (append one line per session)
 
-| Session | Title | Status | Patch | Audit |
-|---------|-------|--------|-------|-------|
-| S00 | Handover framework + planning | DONE (rules superseded by S00B) | `s00-handover-framework.patch` | [session-S00.md](docs/handover/sessions/session-S00.md) |
-| S00B | Rules correction: in-place revamp | DONE | `s00b-in-place-revamp-rules.patch` | [session-S00B.md](docs/handover/sessions/session-S00B.md) |
+| Session | Title | Status | Audit |
+|---------|-------|--------|-------|
+| S00 | Handover framework | DONE (superseded by S00C) | [session-S00.md](docs/handover/sessions/session-S00.md) |
+| S00B | In-place revamp rules | DONE (superseded by S00C) | [session-S00B.md](docs/handover/sessions/session-S00B.md) |
+| S00C | Rescope: SDK coverage only, extend existing tree | DONE | [session-S00C.md](docs/handover/sessions/session-S00C.md) |
+
+Latest combined patch: `s00c-sdk-coverage-handover.patch` (contains S00, S00B, S00C).
 
 ---
 
 ## 5. Rules for every session (summary — full version in PROTOCOL.md)
 
-1. Do **only** the session named in the pointer. Do not start the next one.
-2. One logical change = one commit (`git add` + `git commit` per diff). Moves and edits in separate commits.
-3. Never rewrite history that was already pushed. No force-push.
-4. Finish by: writing the audit file, updating the pointer (§1), the audit index (§4) and the TASKS status board,
-   committing with the subject `handover: complete SNN`, and producing the patch with `scripts/handover/make-patch.sh`.
-5. Hand the owner the `.patch` file and the three commands to apply it (PROTOCOL.md §4).
-6. If you cannot finish, set `STATUS: PARTIAL`, say exactly what is left, and still produce a patch.
+1. Do **only** the session named in the pointer.
+2. One logical change = one commit.
+3. Never rewrite pushed history; no force-push.
+4. Finish by: audit file, pointer (§1), audit index (§4), TASKS status board, COVERAGE.md if changed, commit `handover: complete SNN`, then `scripts/handover/make-patch.sh`.
+5. Give the owner the single combined `.patch` and the three apply commands.
+6. If you cannot finish, set `STATUS: PARTIAL`, say what is left, and still produce a patch.

@@ -1,5 +1,5 @@
 # Session S00 — Handover framework + planning
-> **Superseded in part by S00B:** decisions D1 (src read-only) and D2 (`mcp/` folder) below are void. See `session-S00B.md`.
+> **Superseded by S00C.** The MCP scope and the relocation approach described here were cancelled by the owner. See `session-S00C.md`.
 - Date: 2026-10-02
 - Status: DONE
 - Patch: s00-handover-framework.patch
