@@ -42,7 +42,7 @@ Phase        1, 2, 3, 4, 5
 
 - [x] 1 — `1.a.i.zi` Record the build baseline
 - [x] 2 — `1.a.i.zo` Record which tests need the Prism mock or the network, and report the base-URL finding
-- [ ] 3 — `1.a.ii.zi` `scripts/utils/coverage-report.cjs`
+- [x] 3 — `1.a.ii.zi` `scripts/utils/coverage-report.cjs`
 - [ ] 4 — `1.a.ii.zo` Generate `docs/endpoint-status.md` and verify every `COVERAGE.md` row against the code
 
 **Phase 2 — Evidence for the missing endpoints**
@@ -100,7 +100,7 @@ Phase        1, 2, 3, 4, 5
 - [ ] 46 — `5.b.i.zo` Owner steps document
 - [ ] 47 — `5.b.ii.zi` Owner confirms the first CI run published the image and it pulls and runs *(owner's leaf)*
 
-**Done so far: 2 of 47.** History of M: set at 47 on 2026-10-03 (no splits yet).
+**Done so far: 3 of 47.** History of M: set at 47 on 2026-10-03 (no splits yet).
 
 **Reporting rule:** a session that completes a leaf ends its final message with `N done ✅ of M`, read off this checklist **after** the session. One that completes none says `No new leaf completed — still N done of M`, with the reason. The tick, the count, Current position and the ledger line go in the leaf's own final commit, so the patch and the count can never disagree.
 
@@ -109,14 +109,14 @@ Phase        1, 2, 3, 4, 5
 ## 1a. Current position
 
 ```yaml
-CURRENT_LEAF: 1.a.ii.zi
-CURRENT_LEAF_TITLE: scripts/utils/coverage-report.cjs
-CURRENT_LEAF_SPEC: docs/handover/TASKS.md  ->  "1.a.ii.zi"  (read sessions/1.a.i.zo.md "Next leaf" first)
-FOCUS_RUN: "2 done of 47"
-LAST_COMPLETED_LEAF: 1.a.i.zo
-MARKER_COMMIT_SUBJECT_PREFIX: "1.a.i.zo:"
-LAST_PATCH_NAME: 0003-1.a.i.zo-record-test-dependencies-and-base-url-report.patch
-NEXT_PATCH_NUMBER: "0004"
+CURRENT_LEAF: 1.a.ii.zo
+CURRENT_LEAF_TITLE: Generate docs/endpoint-status.md and verify every COVERAGE.md row against the code
+CURRENT_LEAF_SPEC: docs/handover/TASKS.md  ->  "1.a.ii.zo"  (read sessions/1.a.ii.zi.md "Next leaf" first)
+FOCUS_RUN: "3 done of 47"
+LAST_COMPLETED_LEAF: 1.a.ii.zi
+MARKER_COMMIT_SUBJECT_PREFIX: "1.a.ii.zi:"
+LAST_PATCH_NAME: 0004-1.a.ii.zi-add-coverage-report-script.patch
+NEXT_PATCH_NUMBER: "0005"
 STATUS: READY
 BLOCKERS: None for Phase 1. Owner decision pending, not blocking: the default base URL is the test host (see sessions/1.a.i.zo.md, Part 2). Phase 2 leaves 2.b.i.zi and 2.b.i.zo are the owner's evidence gate; every Phase 3 leaf waits behind them. 5.b.ii.zi is the owner's.
 ```
