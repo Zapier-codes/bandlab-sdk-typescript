@@ -301,4 +301,4 @@ Enable Actions on the fork, set package visibility, confirm the package is linke
 ## Recipe reminders for Phase 3 leaves
 - Home for new code: `ARCHITECTURE.md`. Sub-resources of a folder resource go in that folder; new top-level resources are new files in `src/resources/`; flat files are never converted into folders.
 - Evidence first (D6). A leaf with no evidence for its item is not implemented; set `[~]` and name the evidence needed under BLOCKERS.
-- `yarn build && yarn lint && yarn test` must match or beat the `1.a.i.zi` baseline.
+- `yarn build`, `yarn lint` and `./node_modules/.bin/jest` must match or beat the `1.a.i.zi` baseline (build 0; lint 0 with 1 known warning; jest 217 passed, 185 skipped, 0 failed). `yarn test` cannot run in the sandbox; see `PROTOCOL.md`.

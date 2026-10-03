@@ -18,7 +18,7 @@ Then read your leaf in `docs/handover/TASKS.md`, `ARCHITECTURE.md`, `COVERAGE.md
 - One diff, one commit. Every subject starts with the leaf path: `3.d.i.zi: add posts.create; ...`.
 - Existing files are not moved, renamed or split (D2). Existing public API keeps working (D4).
 - No invented endpoints or shapes (D6). No claim of live verification or of a built image unless it happened (D7).
-- Run `yarn build && yarn lint && yarn test` and compare to the `1.a.i.zi` baseline. Say plainly what could not be run.
+- Run `yarn build && yarn lint` and `./node_modules/.bin/jest`, and compare to the `1.a.i.zi` baseline. **In the sandbox `yarn test` exits 1 before any test runs** (the mock cannot download the spec: `storage.googleapis.com` is blocked and `lsof` is missing), so run jest directly. Yarn itself must be installed first (see `sessions/1.a.i.zi.md`). Say plainly what could not be run.
 - No secrets, tokens, cookies or unscrubbed captures in commits (D11 for images).
 
 ## 3. Finishing the leaf
