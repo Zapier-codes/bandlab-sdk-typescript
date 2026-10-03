@@ -10,3 +10,4 @@ Never rewrite or reorder lines.
 - 0.a.ii.zo — adopt the splitting formula with N of M, add the container phase; 0 done of 47
 
 ## Counted leaves
+- 1.a.i.zi — recorded the build baseline (build 0, lint 0 with 1 warning, jest 217 passed / 185 skipped / 0 failed); 1 done of 47
