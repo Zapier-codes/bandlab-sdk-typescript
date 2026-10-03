@@ -1,122 +1,79 @@
-# Session Task Chunks  (rewritten in S00B for the in-place revamp)
+# Session Task Chunks — SDK full-coverage project
 
-Each chunk is sized for **one session**. Do them in order unless "Depends on" says otherwise.
-All paths are relative to the **repo root** (the architecture tree is the repo root; no `mcp/` folder). What exists / moves / is new: `EXISTING-VS-PLAN.md`.
-
-Refactor discipline (applies to S01–S05): **moves and edits are separate commits.** Use `git mv` so history follows files. Run `yarn build && yarn lint && yarn test` after each move commit.
-A moved file's only change in its move commit is import paths.
+Scope: extend the existing SDK for full BandLab API coverage (`COVERAGE.md`). **No MCP, no restructure.** Rules: `HANDOVER.md` §2, layout/recipe: `ARCHITECTURE.md`.
 
 ## Status board  (update at the end of every session)
 
 | ID | Title | Depends on | Status |
 |----|-------|-----------|--------|
-| S00 | Handover framework + planning | — | DONE |
-| S00B | Rules correction: in-place revamp, no `mcp/`, existing-vs-plan audit | S00 | DONE |
-| S01 | Detach from Stainless, package identity, tooling baseline, plan skeleton | S00B | TODO |
-| S02 | Relocate client + shared types → `src/bandlab/client`, `src/bandlab/types` | S01 | TODO |
-| S03 | Relocate resources A → account, users, search, songs, revisions, collaborators | S02 | TODO |
-| S04 | Relocate resources B → everything else in `api/` | S03 | TODO |
-| S05 | Extend client + build auth layer (retry, rate-limit, raw/authenticated client, session/refresh) | S04 | TODO |
-| S06 | Shared infrastructure: utils, services, `schemas/common`, registry | S05 | TODO |
-| S07 | Permission layer + `server.ts`/`config.ts`/`constants.ts` MCP wiring | S06 | TODO |
-| S08 | Research layer + discovery scripts + api-map (resolve GAPS §A) | S05 | TODO |
-| S09 | New API modules for missing domains (audio, samples, effects, messaging, reports/feedback tidy) | S08, S06 | TODO |
-| S10 | Tools A: account, users, search | S07, S04 | TODO |
-| S11 | Tools B: songs, revisions, production, audio, collaborators | S09, S10 | TODO |
-| S12 | Tools C: social (posts/comments/likes/feed), followers, messaging | S09, S10 | TODO |
-| S13 | Tools D: bands, communities, collections, notifications, invitations, media, discovery | S10 | TODO |
-| S14 | Bulk operations | S12, S13 | TODO |
-| S15 | Developer tools + capability/endpoint-status services | S13 | TODO |
-| S16 | Workflows | S11–S15 | TODO |
-| S17 | Tests (unit + integration + workflow) | S16 | TODO |
-| S18 | Docs, CI, README, release | S17 | TODO |
+| S00 | Handover framework | — | DONE (superseded) |
+| S00B | In-place revamp rules | S00 | DONE (superseded) |
+| S00C | Rescope: SDK coverage only, extend existing tree, combined-patch rule | S00B | DONE |
+| S01 | Baseline + coverage tooling | S00C | TODO |
+| S02 | Research kit (capture guide + scrub/extract scripts) | S01 | TODO |
+| S03 | Evidence triage (needs owner captures) | S02 + owner input | TODO — BLOCKED until owner supplies evidence |
+| S04 | Implement: songs / revisions / production gaps (G02, G04, G05, G11) | S03 | TODO |
+| S05 | Implement: audio / samples / uploads (G03) | S03 | TODO |
+| S06 | Implement: messaging (G01) | S03 | TODO |
+| S07 | Implement: social + media gaps (G06, G07, G08, G12) | S03 | TODO |
+| S08 | Implement: account + any discovered extras (G09, G10, G13) | S03 | TODO |
+| S09 | Consistency + types + docs pass | S04–S08 | TODO |
+| S10 | Final coverage audit + README | S09 | TODO |
 
-If S08 discovers new endpoints, update `GAPS.md` and the affected chunks.
+S04–S08 can run in any order once S03 has produced evidence for their items. An item with no evidence is **not implemented** — it stays in the register as `missing`.
+
+## Implementation recipe (S04–S08; every new endpoint)
+1. Pick the home in `ARCHITECTURE.md` "Where new things go". Never move/rename/split existing files.
+2. Add the method with params/response types, JSDoc (include the path and the evidence status), matching neighbouring files.
+3. Wire it: `src/client.ts` + `src/resources/index.ts` (new resources) or the parent resource/index (sub-resources).
+4. Add the `api.md` line.
+5. Add a test in `tests/api-resources/` using a **custom fetch mock** (new endpoints are not in the Prism spec): assert method, path, query, body, parsing.
+6. Update `docs/endpoint-status.md` and `COVERAGE.md` (domain status + register row).
+7. `yarn build && yarn lint && yarn test` must match or beat the S01 baseline.
+8. Commit: one logical change per commit (`feat(<resource>): add <method>`, then `test(...)`, `docs(...)`).
 
 ---
 
-## S01 — Detach from Stainless, identity, tooling baseline, skeleton
-- First run `yarn install && yarn build && yarn test` and record the baseline (note which tests need the Prism mock).
-- **Snapshot the OpenAPI spec** referenced in `.stats.yml` into `research/openapi-snapshot.yml` (try `curl`; if the sandbox blocks `storage.googleapis.com`, record that as a BLOCKER and ask the owner to supply the file). Repoint `scripts/mock` to the snapshot. Only then remove `.stats.yml`.
-- Remove Stainless/release scaffolding listed in `EXISTING-VS-PLAN.md` §7 (`release-please*`, `bin/*`, auto-CHANGELOG, `release-doctor`/`publish-npm` workflows, `prepare` git-install hook). Keep `scripts/{build,lint,format,test,mock}`.
-- Rewrite `package.json`: name, description, repository (`Zapier-codes/bandlab-sdk-typescript`), author, license (keep Apache-2.0 unless owner says otherwise), add `bin` placeholder for `src/server.ts`.
-- Add: `.env.example`, `prettier.config.js` (migrate from `.prettierrc.json`), plan root files (`README.md` rewrite, `tsconfig.build.json` already exists).
-- Create the **empty directory skeleton** (`.gitkeep`) for every NEW path in `EXISTING-VS-PLAN.md` §4.
-- **Accept:** build/lint/test results equal the baseline; no references to Stainless codegen remain except historical CHANGELOG.
+## S01 — Baseline + coverage tooling
+- `yarn install && yarn build && yarn lint && yarn test`; record results (and which tests need the Prism mock / network) in the audit file. If the mock cannot run in the sandbox, record which tests are skipped.
+- Add `scripts/utils/coverage-report.cjs`: parses `api.md` into the inventory (verb, path, accessor), diffs against `docs/handover/endpoint-inventory.tsv`, and writes `docs/endpoint-status.md` (every endpoint = `spec`). Wire as `scripts/coverage`.
+- Verify each domain row in `COVERAGE.md` against the code; correct anything wrong (e.g. whether `songs` has a list/create, whether `search` covers posts, what `emails.ts` exposes).
+- Check the base-URL finding: `environments.production` = `https://test.bandlab.com/api/v1.3`, `environment_1` = `https://bandlab.com/api/v1.3`. **Report it; do not change defaults without the owner's decision.**
+- **Accept:** baseline recorded; coverage script runs; `endpoint-status.md` exists; COVERAGE.md verified.
 
-## S02 — Relocate client + shared types
-- `git mv src/client.ts src/bandlab/client/client.ts`; merge errors into `client/errors.ts`; move `internal/headers.ts` → `client/headers.ts`. Fix imports everywhere (`src/index.ts` stays the barrel, D8).
-- Split `src/resources/shared.ts` and per-resource type exports into `src/bandlab/types/*` (plan filenames). Re-export so `src/index.ts` public surface is unchanged.
-- Check the base-URL finding (EXISTING-VS-PLAN §8): fix `production` default if it truly points at a test host; keep the old value reachable as an explicit environment.
-- Support both `BANDLAB_*` and legacy `BANDLAB_SDK_*` env vars.
-- **Accept:** zero behaviour change except the two items above; all baseline tests green.
+## S02 — Research kit
+Because sessions cannot reach BandLab, build everything the owner needs to produce evidence and everything sessions need to consume it.
+- `docs/research/CAPTURE-GUIDE.md`: step-by-step for capturing the owner's **own** traffic (browser HAR export from the BandLab web app; optionally a proxy on a phone). Say exactly which actions to perform for G01–G12 (send a message, upload an audio file, create a post, delete a revision, edit a comment, change email, open mix/effects, etc.).
+- `scripts/research/scrub-har.py`: removes tokens, cookies, auth headers, emails, personal ids (replaces with placeholders). Python allowed here only.
+- `scripts/research/har-to-endpoints.py`: extracts method, path template, query keys, request/response JSON shapes into `docs/research/endpoints/<domain>.json` (+ `unknown.json`), and flags endpoints not in the inventory.
+- `scripts/research/README.md`; tests/fixtures with a tiny synthetic HAR.
+- **Accept:** running the scripts on the synthetic HAR yields the expected JSON; guide is complete.
 
-## S03 — Relocate resources A
-- Move per mapping table: `me/passwords/emails/logins` → `api/account/`; `users/*` core → `api/users/`; `search` → `api/search/`; `songs` → `api/songs/`; `songs/revisions` + `revisions` → `api/revisions/`; `songs/collaborators` → `api/collaborators/`.
-- Update `BandlabSDK` resource wiring and `tests/api-resources/**` imports; keep public client API (`client.me`, `client.songs…`) working.
-- Resolve GAPS: song creation via `POST /revisions`; add-collaborator via song invites.
-- **Accept:** tests green; `api.md` regenerated by hand or script to match new paths (it is now our doc, not generated).
+## S03 — Evidence triage  (BLOCKED until the owner supplies captures, a spec, or confirmations)
+- Run the S02 tools on supplied evidence. For each G-item: status `captured` / `missing` / `blocked`; record the shapes.
+- Decide the final resource design for S04–S08 (file names, methods, types) and write it into `COVERAGE.md`.
+- Add any newly found endpoints as G13+ rows.
+- If the owner supplies nothing, stop with `STATUS: PARTIAL` and BLOCKERS naming exactly what is needed. **Do not guess shapes.**
 
-## S04 — Relocate resources B
-- Everything else per mapping: followers, following, notifications, invitations (merge the five `invites` modules), posts, comments, likes, bands, communities, collections, images, videos, genres, skills, labels, badges, settings, push, validation, versions, reports, feedback, authorizations → `auth/`.
-- Blocks, contacts, recommendations stay under `api/users/`.
-- **Accept:** `src/resources/` is empty/removed; tests green.
+## S04 — Songs / revisions / production (G02, G04, G05, G11)
+Create song, list songs, delete revision, add/update collaborator, mix/effects/tracks/project structure — whichever have evidence. Follow the recipe.
 
-## S05 — Extend client + auth layer
-- Split out of `client.ts`: `retry.ts` (honour `Retry-After`), `request.ts`, `response.ts`; add `rate-limit.ts` (token bucket, configurable), `authenticated-client.ts`, `raw-client.ts` (arbitrary method/path through the same transport; used for undocumented endpoints).
-- Typed error hierarchy.
-- Auth: `credentials.ts` (env/secure source; never log), `session.ts`, `tokens.ts`, `refresh.ts`, `auth-state.ts`, built on the existing `authorizations.createSessionKey`.
-- **Accept:** unit tests (mock fetch) for retry, rate-limit, refresh-on-401, and secret redaction in logs.
+## S05 — Audio / samples / uploads (G03)
+New `audio.ts` / `samples.ts` (names per S03). Use the existing `core/uploads` and `internal/uploads` for multipart/binary bodies; do not duplicate upload logic.
 
-## S06 — Shared infrastructure
-- `utils/{ids,dates,validation,errors,serialization}.ts`; `services/{logging,audit-log,caching,pagination,response-normalizer}.ts` (audit-log = append-only JSONL, secrets redacted); `schemas/common.ts` (zod).
-- `registry/{tool-registry,workflow-registry,capability-registry}.ts`; a tool declares `{name, domain, risk: read|write|privileged|destructive|bulk, inputSchema, handler, endpoints[]}`.
-- **Accept:** unit tests; registry lists tools by domain and risk.
+## S06 — Messaging (G01)
+New `messaging.ts` (conversations, messages, send, history) per S03 design.
 
-## S07 — Permission layer + server wiring
-- `permissions/*` (all 7 files). Policy: Read allowed; Write allowed + audited; Privileged needs explicit confirm; Destructive two-step (preview → confirm nonce, expiring); Bulk dry-run by default with caps. Config switch for read-only mode.
-- `src/server.ts` (MCP stdio server; **all dispatch goes through the permission layer, D5**), `src/config.ts`, `src/constants.ts`; `package.json` `bin`.
-- Add `@modelcontextprotocol/sdk` and `zod`.
-- **Accept:** server boots, `tools/list` works with zero tools; unit tests for every risk class.
+## S07 — Social + media gaps (G06, G07, G08, G12)
+Generic create post, get/update comment, search posts, image/video get + upload.
 
-## S08 — Research layer + discovery
-- Create `research/` tree and README; seed `research/endpoints/*.json` from the existing resources (`unknown.json` for the rest); `schemas/`, `captures/`, `experiments/`, `api-map.json`.
-- Scripts: `discover-endpoints`, `compare-sdk-api`, `generate-api-map`, `validate-endpoints`, `inspect-responses`, `upload-audio` (Python allowed here only, D4).
-- Own account only, polite rate limits, **scrub all captures** (no tokens/cookies) before commit.
-- Goal: resolve GAPS §A (messaging, production/mix/effects, audio/samples, delete-account, delete-revision). Update `GAPS.md`.
-- **Accept:** `api-map.json` generated; each GAPS §A item marked verified / missing / blocked.
+## S08 — Account + extras (G09, G10, G13+)
+Change email, delete account (flag destructive in JSDoc), plus anything discovered in S03.
 
-## S09 — New API modules for missing domains
-- Implement `api/audio/`, `api/samples/`, `api/effects/`, `api/messaging/` using S08 findings. Anything not proven live is flagged `unverified` and throws a typed `NotImplementedError` rather than guessing.
-- Types: `audio.ts`, `effect.ts`, messaging types.
-- **Accept:** mocked unit tests; `docs/endpoint-status.md` created with a status per endpoint.
+## S09 — Consistency + types + docs pass
+- Tighten types where captures gave real shapes; JSDoc statuses; consistent naming with neighbours; `api.md` complete; `CHANGELOG`-style notes in the audit file.
+- Optionally fix the `revisonId` typo if touched.
 
-## S10 — Tools A: account, users, search
-- Plan filenames. `change-password`, `change-email`, login-provider changes = Privileged; `delete-account` = Destructive (stub if unverified).
-- `schemas/{account,users}.ts`; add tools for blocks/contacts/access-keys (GAPS §B).
-
-## S11 — Tools B: songs, revisions, production, audio, collaborators
-- `delete-song` = Destructive. `schemas/{songs,revisions,production,collaboration}.ts`. Production/audio tools real only where S09 verified, else `NOT_IMPLEMENTED/unverified`.
-
-## S12 — Tools C: social, followers, messaging
-- `social/{posts,comments,likes,feed}`, `followers/*` (+ block/unblock Privileged), `messaging/*` per S09. `schemas/social.ts`.
-
-## S13 — Tools D: bands, communities, collections, notifications, invitations, media, discovery
-- Plan filenames; deletes = Destructive. `schemas/{collections,notifications,invitations}.ts`.
-
-## S14 — Bulk operations
-- `tools/bulk/*`: `batch-executor` (concurrency 1–3, jittered delay, stop-on-error), `dry-run`, `progress`, `results`; follow/unfollow/like/unlike/comment/invite; `bulk-message` only if messaging verified.
-- Defaults: dry-run on, per-call cap (e.g. 25), daily cap in config, full audit log, dedupe, no identical-comment spam without explicit `allowDuplicate`. `schemas/bulk.ts`.
-
-## S15 — Developer tools + capability services
-- `tools/developer/*` (`raw-request` Privileged, host allow-list); `services/{api-coverage,endpoint-registry,capability-discovery,health-check}.ts`; generate `docs/endpoint-status.md` from the registry.
-
-## S16 — Workflows
-- All 11 `workflows/*` files; register in `workflow-registry`; expose as MCP prompts and/or composite tools.
-
-## S17 — Tests
-- `tests/unit/*`, `tests/integration/*` (live tests gated by `BANDLAB_LIVE=1`, skipped by default), `tests/workflows/*`; coverage report.
-
-## S18 — Docs, CI, release
-- Plan `docs/*` (9 files), final `README.md`, `.github/workflows/{test,lint,build,release}.yml`.
-- Final audit: every file in the plan tree exists or is explicitly listed as deferred.
+## S10 — Final coverage audit + README
+- Regenerate `endpoint-status.md`; every endpoint has a status; COVERAGE.md domain rows all Covered or explicitly `missing/blocked` with reasons.
+- Update `README.md` with the new resources and a short usage example for each new domain.
