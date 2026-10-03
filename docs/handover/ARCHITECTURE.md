@@ -1,9 +1,10 @@
 # Target Architecture — Private BandLab MCP
 
-> Saved verbatim from the owner's plan. **Path mapping:** the plan's root `bandlab-mcp/` lives in this repo at **`mcp/`**.
-> So `bandlab-mcp/src/tools/...` is `mcp/src/tools/...`; `bandlab-mcp/research/` is `mcp/research/`, etc.
-> The generated SDK (`src/`, `api.md`, `tests/api-resources/`) stays where it is and is consumed, not edited (HANDOVER D1).
-
+> Saved verbatim from the owner's plan. **The tree below IS the repo root** — there is no `mcp/` folder (owner ruling, S00B).
+> The existing SDK code is revamped in place: moved into these paths, extended, and the missing layers added.
+> See `EXISTING-VS-PLAN.md` for exactly what exists, what moves, and what is new.
+> Documented additions to the plan: `src/core/` + `src/internal/` (HTTP runtime kept), `api/messaging/`, `api/reports/`, `api/feedback/`, blocks/contacts under `api/users/`.
+> The root label `bandlab-mcp/` in the tree means "repo root".
 ## 1. Full target tree
 
 ```text
