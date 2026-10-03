@@ -18,7 +18,7 @@ cat HANDOVER.md                                    # read the NEXT SESSION POINT
    `git log --oneline | grep "handover: complete <LAST_COMPLETED>"`.
 2. Read your section in `docs/handover/TASKS.md`.
 3. Read the previous audit file in `docs/handover/sessions/`.
-4. Read `docs/handover/GAPS.md` if your chunk touches a gap.
+4. Read `docs/handover/EXISTING-VS-PLAN.md` (what exists / moves / is new) and `docs/handover/GAPS.md` if your chunk touches a gap.
 5. Do not touch anything outside your chunk's scope.
 
 ## 2. During the session
@@ -26,8 +26,11 @@ cat HANDOVER.md                                    # read the NEXT SESSION POINT
 - **One diff = one commit.** After each logical change: `git add <paths>` then `git commit -m "<type>(<scope>): <subject>"`.
   - Types: `feat`, `fix`, `docs`, `chore`, `test`, `refactor`, `research`, `handover`.
   - Never `git add -A` blindly; review `git status` first.
-- Generated SDK code in `src/` is read-only (see HANDOVER D1).
-- Run `cd mcp && yarn lint && yarn build && yarn test` once those exist (from S01 onward). Do not hand over a red build;
+- Everything in this repo is ours, including `src/` (HANDOVER D1). Edit freely, but keep refactors disciplined:
+  - **Moves and edits are separate commits.** Use `git mv` so history follows the file; a move commit changes only import paths.
+  - Keep the build green after each move commit.
+  - Wire paths to the BandLab server must not change when renaming internal code.
+- Run `yarn lint && yarn build && yarn test` at the repo root before finishing (record the baseline in S01; later sessions must not regress it). Do not hand over a red build;
   if something is unavoidably red, record it under BLOCKERS.
 - Never commit secrets, tokens, cookies or captured credentials. `research/captures/` must be scrubbed.
 
@@ -44,7 +47,8 @@ cat HANDOVER.md                                    # read the NEXT SESSION POINT
    ./scripts/handover/make-patch.sh sNN-short-slug
    ```
    This produces `/mnt/user-data/outputs/sNN-short-slug.patch` (or `./patches/` if that path is missing).
-   The name is chosen **dynamically by the session**: `sNN-<kebab-case-summary>.patch`.
+   The name is chosen **dynamically by the session**: `sNN-<kebab-case-summary>.patch` (a correction session may use a letter suffix, e.g. `s00b-...`).
+   If your commits sit on top of a previous session that is not yet on `origin/main`, set `PATCH_BASE=<ref>` (the previous marker commit) so the patch contains only your commits.
 6. Present the patch to the owner and give them the exact commands in §4 with the real patch name filled in.
 
 ## 4. Owner apply commands (Termux)
@@ -60,6 +64,7 @@ git push
 Notes for the session to include when relevant:
 - `git am` replays every commit from the session with its original message and author, so history stays one-commit-per-diff.
 - If `git am` stops with a conflict: `git am --abort`, then tell the next session / owner the local repo was not at the expected base.
+- Patches must be applied in order (S00, then S00B, then S01 …). Skip any you already applied.
 - The patch is built against `origin/main` **as cloned at session start**. The owner must have pushed the previous session's patch
   before the next session clones; otherwise the marker-commit check (§1) fails and the next session must stop.
 - To check before applying: `git apply --check ~/storage/downloads/<patch-name>.patch` is NOT sufficient for mbox patches;
@@ -102,4 +107,5 @@ Notes for the session to include when relevant:
 | Session ran out of time mid-chunk | `STATUS: PARTIAL`, list remaining items in the audit file and in TASKS.md, still produce a patch. |
 | Chunk needs a decision from the owner | Put it in BLOCKERS, finish what is unblocked. |
 | A needed endpoint is not in the SDK | Add to `GAPS.md`; never fake it. Use `developer/raw-request` once built (S13). |
-| Tempted to edit `src/` generated SDK | Don't. Extend in `mcp/` or `src/lib/`. |
+| Existing code looks "generated" or odd | It is ours now. Fix or relocate it, per `EXISTING-VS-PLAN.md`. |
+| Owner states a new rule mid-session | Owner's rule wins. Update `HANDOVER.md` rules in the same session and note it in the audit file. |
