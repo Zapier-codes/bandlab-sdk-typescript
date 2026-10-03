@@ -29,7 +29,7 @@ repo root
 │                           search, images, videos, settings/*, push/*, emails/*, logins, passwords, authorizations,
 │                           genres, skills, labels, badges, validation, versions, reports, feedback
 ├── tests/
-│   ├── api-resources/      one test per resource (Prism-mock driven from the OpenAPI spec)
+│   ├── api-resources/      one test file per resource, written for a Prism mock; all 185 tests are currently `test.skip`
 │   └── *.test.ts           runtime tests (custom fetch mock pattern lives in tests/index.test.ts)
 ├── api.md                  method list; hand-maintained from now on
 ├── scripts/                build, lint, format, test, mock, utils/
@@ -54,7 +54,8 @@ repo root
 Not touched: Stainless/release scaffolding (`release-please-config.json`, `bin/`, `.github/workflows/*`, `scripts/utils/*`). Left as is.
 
 ### Testing note
-Existing tests run against a Prism mock built from the OpenAPI spec. **New endpoints are not in that spec, so Prism cannot serve them.**
+The 46 resource test files are written for a Prism mock server built from the OpenAPI spec (`http://127.0.0.1:4010`), but **every one of their 185 tests is declared `test.skip` ("Prism tests are disabled"), so today they assert nothing.** The 7 runtime suites in `tests/*.test.ts` need neither a mock nor the network (verified in a network-less namespace). Details: `sessions/1.a.i.zo.md`.
+**New endpoints are not in the spec, so Prism could not serve them even if the tests were enabled.**
 New-endpoint tests must use a **custom `fetch` mock** (pattern in `tests/index.test.ts`) and assert method, path, query, body and response parsing.
 Keep them in `tests/api-resources/`, named like the resource.
 
