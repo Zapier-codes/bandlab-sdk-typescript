@@ -1,18 +1,18 @@
 # Coverage Gaps — Plan vs. Generated SDK
 
-Audit date: S00. Source: `api.md` (123 SDK methods). Re-verify with `scripts/compare-sdk-api/` once built (S15).
+Audit date: S00 (revised S00B for in-place revamp). Source: `api.md` (123 SDK methods). Re-verify with `scripts/compare-sdk-api/` once built (S08).
 
-## A. Planned in the architecture, NOT in the SDK  → needs research / `raw-request`
+## A. Planned in the architecture, NOT in the existing code  → needs research, then new `src/bandlab/api/*` modules
 
 | Planned tool(s) | Domain | Finding | Handling |
 |-----------------|--------|---------|----------|
-| `messaging/*` (conversations, messages, send-message, message-history, bulk-message) | 11 Messaging | **No messaging endpoints in SDK.** | Research (S15). Until verified, tools return `NOT_IMPLEMENTED` with status `unverified`. Bulk-message is blocked on this. |
-| `production/*` (get-mix, edit-mix, effects CRUD, tracks, track-settings, project-structure) | 06 Production | **No mix/effects/track endpoints.** Only `revisions` get/patch/create/plays/forks exist. | Research (S15). Add to `research/endpoints/effects.json`. |
-| `audio/*` (upload-audio, upload-sample, get-sample, audio-metadata) | 07 Audio | **No audio upload / sample endpoints.** SDK has image/video *post* creation only. | Research (S15) + `scripts/upload-audio/`. |
+| `messaging/*` (conversations, messages, send-message, message-history, bulk-message) | 11 Messaging | **No messaging endpoints in SDK.** | Research (S08). Add `api/messaging/` (not in plan tree). Until verified, tools return `NOT_IMPLEMENTED` with status `unverified`. Bulk-message is blocked on this. |
+| `production/*` (get-mix, edit-mix, effects CRUD, tracks, track-settings, project-structure) | 06 Production | **No mix/effects/track endpoints.** Only `revisions` get/patch/create/plays/forks exist. | Research (S08). Add to `research/endpoints/effects.json`. |
+| `audio/*` (upload-audio, upload-sample, get-sample, audio-metadata) | 07 Audio | **No audio upload / sample endpoints.** SDK has image/video *post* creation only. | Research (S08) + `scripts/upload-audio/`. |
 | `revisions/delete-revision` | 05 | No `DELETE /revisions/{id}`. | Research; may not exist. |
-| `songs/create` (implicit) | 04 | No `POST /songs`; creation appears to be via `POST /revisions`. | Confirm in S04. |
-| `collaborators/add-collaborator` | 08 | Only list + delete collaborator; adding is via **song invites** (`POST /song/{id}/invites`). | Map add-collaborator → song invite in S05. |
-| `social/feed/user-feed` | 09 | Only `users/{id}/following/posts` (following feed) + `GET /posts`. | Map in S05; user-feed = `users/{id}/posts`. |
+| `songs/create` (implicit) | 04 | No `POST /songs`; creation appears to be via `POST /revisions`. | Confirm in S03. |
+| `collaborators/add-collaborator` | 08 | Only list + delete collaborator; adding is via **song invites** (`POST /song/{id}/invites`). | Map add-collaborator → song invite in S03. |
+| `social/feed/user-feed` | 09 | Only `users/{id}/following/posts` (following feed) + `GET /posts`. | Map in S04; user-feed = `users/{id}/posts`. |
 | `account/delete-account` | 01 | No delete-account endpoint (only `passwords`, `emails`, `logins`, `me`). | Research; mark `unverified`. |
 | `media/media-posts` | 17 | Covered by `POST /images/{id}/posts`, `POST /videos/{id}/posts`; no list. | Fine; document. |
 
@@ -32,10 +32,11 @@ Audit date: S00. Source: `api.md` (123 SDK methods). Re-verify with `scripts/com
 | Versions | `GET /versions/{clientId}`, `/valid` | `tools/developer/api-version.ts` |
 | Validation | `GET /validation/{entityType}` | `tools/developer/validate.ts` |
 
-## C. Inconsistent SDK path forms (watch out)
+## C. Inconsistent path forms (watch out)
 
-The SDK mixes singular/plural prefixes: `/song/{id}/invites`, `/song/{id}/posts`, `/community/{id}/invites|posts`
-vs `/songs/{id}`, `/communities/{id}`. These come from the generated spec — **do not "fix" them**; wrap them.
+The code mixes singular/plural wire prefixes: `/song/{id}/invites`, `/song/{id}/posts`, `/community/{id}/invites|posts`
+vs `/songs/{id}`, `/communities/{id}`. **Wire paths must stay exactly as the server expects** (verify during S08).
+Our internal method and file names may be normalised freely, since we own this code.
 
 ## D. Status vocabulary used in `docs/endpoint-status.md`
 
