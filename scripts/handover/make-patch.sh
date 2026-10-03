@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 # Build a single git-am-compatible .patch from every commit made since origin/main.
-# Usage: scripts/handover/make-patch.sh sNN-short-slug
+# Usage: scripts/handover/make-patch.sh NNNN-<leaf-path>-<description>
+#   e.g.  0002-1.a.i.zi-record-build-baseline
 # Always builds the COMBINED patch: every commit not yet on origin/main (all unpushed sessions + this one).
 set -euo pipefail
 
 NAME="${1:-}"
 if [[ -z "$NAME" ]]; then
-  echo "usage: $0 sNN-short-slug   (e.g. s01-scaffold-mcp-package)" >&2; exit 1
+  echo "usage: $0 NNNN-<leaf-path>-<description>" >&2; exit 1
 fi
 NAME="${NAME%.patch}"
-if [[ ! "$NAME" =~ ^s[0-9]{2}[a-z]?-[a-z0-9-]+$ ]]; then
-  echo "error: name must look like sNN[x]-kebab-slug (got '$NAME')" >&2; exit 1
+if [[ ! "$NAME" =~ ^[0-9]{4}-[0-9a-z.]+-[a-z0-9-]+$ ]]; then
+  echo "error: name must look like NNNN-<leaf-path>-<description> (got '$NAME')" >&2; exit 1
 fi
 
 cd "$(git rev-parse --show-toplevel)"
@@ -27,8 +28,8 @@ COUNT="$(git rev-list --count "$BASE"..HEAD)"
 if [[ "$COUNT" -eq 0 ]]; then echo "error: no commits ahead of $BASE" >&2; exit 1; fi
 
 SUBJECTS="$(git log "$BASE"..HEAD --format=%s)"
-if ! grep -q '^handover: complete S' <<<"$SUBJECTS"; then
-  echo "warning: no 'handover: complete SNN' commit found in this patch — did you finish the handover step?" >&2
+if ! grep -qE '^[0-9]+\.[a-z]\.[ivx]+\.z[io]:' <<<"$SUBJECTS"; then
+  echo "warning: no commit subject starting with a leaf path (e.g. 1.a.i.zi:) found — did you finish the leaf's final commit?" >&2
 fi
 
 OUTDIR="/mnt/user-data/outputs"
@@ -50,8 +51,8 @@ fi
 git worktree remove --force "$TMP"
 
 echo
-echo "Sessions contained in this combined patch:"
-git log "$BASE"..HEAD --format=%s | grep "^handover: complete" | sed "s/^handover: complete /  - /" | sort
+echo "Leaves carried by this combined patch (commit subjects that start with a leaf path or a legacy marker):"
+git log --reverse "$BASE"..HEAD --format=%s | grep -E "^([0-9]+\.[a-z]\.[ivx]+\.z[io]:|handover: complete)" | cut -c1-110 | sed "s/^/  - /"
 echo
 echo "Patch: $OUT"
 echo "(Apply ONLY this one. Delete older .patch files.)"
