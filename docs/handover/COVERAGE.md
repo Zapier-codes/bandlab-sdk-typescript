@@ -1,9 +1,9 @@
 # Coverage Matrix and Missing-Capability Register
 
 Source of truth for what the SDK covers. Baseline inventory (123 methods, snapshot of `api.md`): `endpoint-inventory.tsv`
-(columns: HTTP verb, path, resource accessor). S01 builds a script that regenerates and diffs it.
+(columns: HTTP verb, path, resource accessor). `1.a.ii.zi` builds a script that regenerates and diffs it.
 
-Status vocabulary for endpoints (tracked in `docs/endpoint-status.md` from S01):
+Status vocabulary for endpoints (tracked in `docs/endpoint-status.md` from `1.a.ii.zo`):
 `spec` (in the original OpenAPI spec) · `captured` (seen in a real request capture) · `unverified` (inferred, no evidence yet) · `live-ok` (owner ran it successfully) · `missing`.
 
 ## 1. Domain matrix (the 17 domains)
@@ -18,7 +18,7 @@ Status vocabulary for endpoints (tracked in `docs/endpoint-status.md` from S01):
 | 06 | Production / Mix / Effects | **Missing** | none (revision types mention `AudioSample`, `Mastering`) | mix, effects, tracks, track settings, project structure |
 | 07 | Audio / Samples / Uploads | **Missing** | none (`core/uploads` handles generic file bodies) | audio upload, sample upload/get, audio metadata |
 | 08 | Collaborators | Partial | `songs.collaborators` (list, delete) | add/update collaborator (currently only via `songs.invites`; confirm) |
-| 09 | Posts / Social | Partial | `posts` (list, retrieve, update, delete), `posts.comments` (list, create, delete), `posts.likes`, `images`, `videos` | create post (generic) · get/update comment |
+| 09 | Posts / Social | Partial | `posts` (list, retrieve, update, delete), `posts.comments` (list, create, delete), `posts.likes`, `images`, `videos` | create post (generic) · get/update comment · share / repost a track (G14) |
 | 10 | Followers / Following | Covered | `users.followers`, `users.following`, `users.blocks` | — |
 | 11 | Messaging | **Missing** | none | conversations, messages, send, history |
 | 12 | Bands | Covered | `bands` (CRUD, posts, songs), `bands.members`, `bands.invites` | — |
@@ -44,7 +44,8 @@ Status vocabulary for endpoints (tracked in `docs/endpoint-status.md` from S01):
 | G10 | Delete account | 01 | `me.ts` or new | none |
 | G11 | Add / update collaborator | 08 | `songs/collaborators.ts` | partial hint (invites) |
 | G12 | Image / video get + upload | 17 | `images.ts`, `videos.ts` | none |
-| G13 | Unknown extras BandLab exposes that nobody listed (reposts, playlists, studio projects, etc.) | — | decided by research | n/a — discovered in S03 |
+| G13 | Unknown extras BandLab exposes that nobody listed (reposts, playlists, studio projects, etc.) | — | decided by research | n/a — discovered in `2.b.i.zi` |
+| G14 | Share / repost a track (no share or repost call exists; added 0.a.ii.zo after the owner asked about engagement) | 09 | `posts/posts.ts` or a new sub-resource | none |
 
 "none" means no request/response shape has been seen. Sessions must not guess shapes.
 
