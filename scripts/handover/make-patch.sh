@@ -26,7 +26,8 @@ git rev-parse --verify -q "$BASE" >/dev/null || { echo "error: $BASE not found (
 COUNT="$(git rev-list --count "$BASE"..HEAD)"
 if [[ "$COUNT" -eq 0 ]]; then echo "error: no commits ahead of $BASE" >&2; exit 1; fi
 
-if ! git log "$BASE"..HEAD --format=%s | grep -q '^handover: complete S'; then
+SUBJECTS="$(git log "$BASE"..HEAD --format=%s)"
+if ! grep -q '^handover: complete S' <<<"$SUBJECTS"; then
   echo "warning: no 'handover: complete SNN' commit found in this patch — did you finish the handover step?" >&2
 fi
 
