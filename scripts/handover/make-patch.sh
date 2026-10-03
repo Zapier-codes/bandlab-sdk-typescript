@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Build a single git-am-compatible .patch from every commit made since origin/main.
-# Usage: [PATCH_BASE=<ref>] scripts/handover/make-patch.sh sNN-short-slug
-# PATCH_BASE defaults to origin/main; set it when earlier unpushed sessions sit underneath.
+# Usage: scripts/handover/make-patch.sh sNN-short-slug
+# Always builds the COMBINED patch: every commit not yet on origin/main (all unpushed sessions + this one).
 set -euo pipefail
 
 NAME="${1:-}"
@@ -20,7 +20,8 @@ if [[ -n "$(git status --porcelain)" ]]; then
   git status --short >&2; exit 1
 fi
 
-BASE="${PATCH_BASE:-origin/main}"
+git fetch origin -q 2>/dev/null || echo "warning: could not fetch origin; using last known origin/main" >&2
+BASE="origin/main"
 git rev-parse --verify -q "$BASE" >/dev/null || { echo "error: $BASE not found (git fetch origin)" >&2; exit 1; }
 COUNT="$(git rev-list --count "$BASE"..HEAD)"
 if [[ "$COUNT" -eq 0 ]]; then echo "error: no commits ahead of $BASE" >&2; exit 1; fi
@@ -48,7 +49,11 @@ fi
 git worktree remove --force "$TMP"
 
 echo
+echo "Sessions contained in this combined patch:"
+git log "$BASE"..HEAD --format=%s | grep "^handover: complete" | sed "s/^handover: complete /  - /" | sort
+echo
 echo "Patch: $OUT"
+echo "(Apply ONLY this one. Delete older .patch files.)"
 echo
 echo "Run on the phone:"
 echo "  cd ~/bandlab-sdk-typescript"
