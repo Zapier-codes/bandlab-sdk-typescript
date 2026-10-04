@@ -54,7 +54,7 @@ Folder layout under `docs/research/`, file naming (`<G-id>-<action>.har`, scrubb
 
 **7 · `2.a.ii.zi` — `scripts/research/scrub-har.py` and a synthetic fixture**
 
-Removes tokens, cookies, auth headers, emails and personal ids, replacing them with placeholders. Python is allowed here only (D5).
+Removes tokens, cookies, auth headers, emails and personal ids, replacing them with placeholders. Python is allowed here only (D5). **Requirements: `docs/research/HAND-BACK.md` section 6** (stable placeholders, drop static assets and binary bodies, keep JSON bodies, never modify the original, output must pass the section 4 checks). Standard library only, so it runs in Termux with no installs.
 
 **8 · `2.a.ii.zo` — `scripts/research/har-to-endpoints.py` and a fixture**
 
