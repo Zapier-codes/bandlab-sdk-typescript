@@ -47,7 +47,7 @@ Phase        1, 2, 3, 4, 5
 
 **Phase 2 — Evidence for the missing endpoints**
 
-- [ ] 5 — `2.a.i.zi` `docs/research/CAPTURE-GUIDE.md`
+- [x] 5 — `2.a.i.zi` `docs/research/CAPTURE-GUIDE.md`
 - [ ] 6 — `2.a.i.zo` Evidence hand-back format
 - [ ] 7 — `2.a.ii.zi` `scripts/research/scrub-har.py` and a synthetic fixture
 - [ ] 8 — `2.a.ii.zo` `scripts/research/har-to-endpoints.py` and a fixture
@@ -100,7 +100,7 @@ Phase        1, 2, 3, 4, 5
 - [ ] 46 — `5.b.i.zo` Owner steps document
 - [ ] 47 — `5.b.ii.zi` Owner confirms the first CI run published the image and it pulls and runs *(owner's leaf)*
 
-**Done so far: 4 of 47.** History of M: set at 47 on 2026-10-03 (no splits yet).
+**Done so far: 5 of 47.** History of M: set at 47 on 2026-10-03 (no splits yet).
 
 **Reporting rule:** a session that completes a leaf ends its final message with `N done ✅ of M`, read off this checklist **after** the session. One that completes none says `No new leaf completed — still N done of M`, with the reason. The tick, the count, Current position and the ledger line go in the leaf's own final commit, so the patch and the count can never disagree.
 
@@ -109,14 +109,14 @@ Phase        1, 2, 3, 4, 5
 ## 1a. Current position
 
 ```yaml
-CURRENT_LEAF: 2.a.i.zi
-CURRENT_LEAF_TITLE: docs/research/CAPTURE-GUIDE.md
-CURRENT_LEAF_SPEC: docs/handover/TASKS.md  ->  "2.a.i.zi"  (read sessions/1.a.ii.zo.md "Next leaf" first)
-FOCUS_RUN: "4 done of 47"
-LAST_COMPLETED_LEAF: 1.a.ii.zo
-MARKER_COMMIT_SUBJECT_PREFIX: "1.a.ii.zo:"
-LAST_PATCH_NAME: 0005-1.a.ii.zo-endpoint-status-and-verified-coverage-matrix.patch
-NEXT_PATCH_NUMBER: "0006"
+CURRENT_LEAF: 2.a.i.zo
+CURRENT_LEAF_TITLE: Evidence hand-back format
+CURRENT_LEAF_SPEC: docs/handover/TASKS.md  ->  "2.a.i.zo"  (read sessions/2.a.i.zi.md "Next leaf" first)
+FOCUS_RUN: "5 done of 47"
+LAST_COMPLETED_LEAF: 2.a.i.zi
+MARKER_COMMIT_SUBJECT_PREFIX: "2.a.i.zi:"
+LAST_PATCH_NAME: 0006-2.a.i.zi-capture-guide.patch
+NEXT_PATCH_NUMBER: "0007"
 STATUS: READY
 BLOCKERS: None for Phase 1 (complete). Owner decision pending, not blocking: the default base URL is the test host (see sessions/1.a.i.zo.md, Part 2). Phase 2 leaves 2.b.i.zi and 2.b.i.zo are the owner's evidence gate; every Phase 3 leaf waits behind them. 5.b.ii.zi is the owner's.
 ```
