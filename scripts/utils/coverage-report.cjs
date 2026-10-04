@@ -4,6 +4,7 @@
  *
  * Parses api.md into endpoint rows (verb, path, accessor, method, file) and diffs them
  * against the inventory snapshot in docs/handover/endpoint-inventory.tsv.
+ * With --markdown it prints the seed for docs/endpoint-status.md instead.
  * No dependencies; run it through ./scripts/coverage.
  *
  * Exit codes: 0 = no drift, 1 = drift between api.md and the inventory,
@@ -30,6 +31,9 @@ Options:
   --inventory <file>   inventory TSV to compare against
                        (default: docs/handover/endpoint-inventory.tsv)
   --tsv                print the parsed rows as TSV and exit (verb, path, accessor, method, file); no diff
+  --markdown           print the seed for docs/endpoint-status.md and exit; no diff. Rows present in the
+                       inventory get status 'spec', any other row gets 'unverified'. Output is deterministic.
+                       Seed only: edit the Status column by hand afterwards and do not regenerate over it.
   -h, --help           show this help
 
 Exit codes: 0 no drift, 1 drift, 2 input could not be read or parsed.`;
@@ -111,10 +115,62 @@ const byPathThenVerb = (a, b) =>
   : a.verb > b.verb ? 1
   : 0;
 
+const STATUS_VOCABULARY = [
+  ['spec', 'in the original OpenAPI spec; never run against BandLab from this repo'],
+  ['captured', 'seen in a real request capture supplied by the owner'],
+  ['unverified', 'inferred or added without evidence'],
+  ['live-ok', 'the owner ran it successfully against BandLab'],
+  ['missing', 'looked for, not found'],
+];
+
+const cell = (text) => String(text).replace(/\|/g, '\\|');
+const byAccessorThenPathThenVerb = (a, b) =>
+  a.accessor < b.accessor ? -1
+  : a.accessor > b.accessor ? 1
+  : byPathThenVerb(a, b);
+
+function renderMarkdown(rows, inventoryRows) {
+  const known = countBy(inventoryRows);
+  const body = rows
+    .slice()
+    .sort(byAccessorThenPathThenVerb)
+    .map((row) => {
+      const status = known.has(keyOf(row)) ? 'spec' : 'unverified';
+      return { status, row };
+    });
+  const tally = new Map();
+  for (const { status } of body) tally.set(status, (tally.get(status) || 0) + 1);
+
+  const lines = ['# Endpoint Status', ''];
+  lines.push(
+    'One row per endpoint the SDK exposes, sorted by SDK accessor. Seeded by `./scripts/coverage --markdown` from `api.md`;',
+    'after that the **Status** column is edited by hand as evidence arrives. Do not regenerate over a hand-edited file.',
+    'To check that `api.md` still matches the inventory snapshot, run `./scripts/coverage`.',
+    '',
+  );
+  lines.push('| Status | Meaning |', '|--------|---------|');
+  for (const [name, meaning] of STATUS_VOCABULARY) lines.push(`| \`${name}\` | ${meaning} |`);
+  lines.push('');
+  const summary = [...tally.entries()].map(([name, n]) => `${n} \`${name}\``).join(', ');
+  lines.push(`**${rows.length} endpoints: ${summary}.**`, '');
+  lines.push('| Status | Verb | Path | SDK call | Source |', '|--------|------|------|----------|--------|');
+  for (const { status, row } of body) {
+    const source = row.file.replace(/^\.\//, '');
+    lines.push(
+      `| \`${status}\` | ${row.verb.toUpperCase()} | \`${cell(row.path)}\` | \`client.${row.accessor}${
+        row.method
+      }()\` | \`${cell(source)}\` |`,
+    );
+  }
+  lines.push('');
+  return lines.join('\n');
+}
+
 function main(argv) {
   let apiFile = DEFAULT_API;
   let inventoryFile = DEFAULT_INVENTORY;
   let tsv = false;
+  let markdown = false;
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
@@ -123,6 +179,8 @@ function main(argv) {
       return 0;
     } else if (arg === '--tsv') {
       tsv = true;
+    } else if (arg === '--markdown') {
+      markdown = true;
     } else if (arg === '--api' || arg === '--inventory') {
       const value = argv[++i];
       if (!value) return fail(`${arg} needs a file argument`);
@@ -132,6 +190,8 @@ function main(argv) {
       return fail(`unknown option: ${arg}\n\n${USAGE}`);
     }
   }
+
+  if (tsv && markdown) return fail('--tsv and --markdown cannot be combined');
 
   const api = parseApiMd(readFile(apiFile, 'api.md'));
   if (api.unparsed.length > 0) {
@@ -157,6 +217,11 @@ function main(argv) {
     );
     for (const b of inventory.bad) console.error(`  line ${b.line}: ${b.text}`);
     return 2;
+  }
+
+  if (markdown) {
+    process.stdout.write(renderMarkdown(api.rows, inventory.rows));
+    return 0;
   }
 
   const added = surplus(api.rows, countBy(inventory.rows)); // in api.md, not in the inventory
