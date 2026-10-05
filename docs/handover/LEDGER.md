@@ -16,3 +16,4 @@ Never rewrite or reorder lines.
 - 1.a.ii.zo — generated docs/endpoint-status.md (123 endpoints, all spec), added --markdown to the coverage script, verified COVERAGE.md against the code (123 calls = 123 api.md rows) and corrected it (7 Covered, 8 Partial, 2 Missing); Phase 1 complete; 4 done of 47
 - 2.a.i.zi — wrote docs/research/CAPTURE-GUIDE.md (capture tasks for G01 to G14 plus the base-host check P0, HAR export steps, safety rules; written from memory without BandLab access); 5 done of 47
 - 2.a.i.zo — wrote docs/research/HAND-BACK.md and the 42-row CAPTURE-CHECKLIST.md, git-ignored raw captures, defined the three hand-back routes and the scrubber requirements; 6 done of 47
+- 2.a.ii.zi — added scripts/research/scrub-har.py (scrubber plus structured --check, stdlib only), a synthetic fixture and 24 tests; replaced the false-alarm keyword check in HAND-BACK.md; 7 done of 47

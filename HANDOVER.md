@@ -49,7 +49,7 @@ Phase        1, 2, 3, 4, 5
 
 - [x] 5 — `2.a.i.zi` `docs/research/CAPTURE-GUIDE.md`
 - [x] 6 — `2.a.i.zo` Evidence hand-back format
-- [ ] 7 — `2.a.ii.zi` `scripts/research/scrub-har.py` and a synthetic fixture
+- [x] 7 — `2.a.ii.zi` `scripts/research/scrub-har.py` and a synthetic fixture
 - [ ] 8 — `2.a.ii.zo` `scripts/research/har-to-endpoints.py` and a fixture
 - [ ] 9 — `2.b.i.zi` Run the tools on the owner's evidence and set a status per G-item *(owner's leaf)*
 - [ ] 10 — `2.b.i.zo` Record the final resource design *(owner's leaf)*
@@ -100,7 +100,7 @@ Phase        1, 2, 3, 4, 5
 - [ ] 46 — `5.b.i.zo` Owner steps document
 - [ ] 47 — `5.b.ii.zi` Owner confirms the first CI run published the image and it pulls and runs *(owner's leaf)*
 
-**Done so far: 6 of 47.** History of M: set at 47 on 2026-10-03 (no splits yet).
+**Done so far: 7 of 47.** History of M: set at 47 on 2026-10-03 (no splits yet).
 
 **Reporting rule:** a session that completes a leaf ends its final message with `N done ✅ of M`, read off this checklist **after** the session. One that completes none says `No new leaf completed — still N done of M`, with the reason. The tick, the count, Current position and the ledger line go in the leaf's own final commit, so the patch and the count can never disagree.
 
@@ -109,14 +109,14 @@ Phase        1, 2, 3, 4, 5
 ## 1a. Current position
 
 ```yaml
-CURRENT_LEAF: 2.a.ii.zi
-CURRENT_LEAF_TITLE: scripts/research/scrub-har.py and a synthetic fixture
-CURRENT_LEAF_SPEC: docs/handover/TASKS.md  ->  "2.a.ii.zi"  (read sessions/2.a.i.zo.md "Next leaf" first; requirements are in docs/research/HAND-BACK.md section 6)
-FOCUS_RUN: "6 done of 47"
-LAST_COMPLETED_LEAF: 2.a.i.zo
-MARKER_COMMIT_SUBJECT_PREFIX: "2.a.i.zo:"
-LAST_PATCH_NAME: 0007-2.a.i.zo-evidence-hand-back-format.patch
-NEXT_PATCH_NUMBER: "0008"
+CURRENT_LEAF: 2.a.ii.zo
+CURRENT_LEAF_TITLE: scripts/research/har-to-endpoints.py and a fixture
+CURRENT_LEAF_SPEC: docs/handover/TASKS.md  ->  "2.a.ii.zo"  (read sessions/2.a.ii.zi.md "Next leaf" first)
+FOCUS_RUN: "7 done of 47"
+LAST_COMPLETED_LEAF: 2.a.ii.zi
+MARKER_COMMIT_SUBJECT_PREFIX: "2.a.ii.zi:"
+LAST_PATCH_NAME: 0008-2.a.ii.zi-har-scrubber-and-checker.patch
+NEXT_PATCH_NUMBER: "0009"
 STATUS: READY
 BLOCKERS: None for Phase 1 (complete). Owner decision pending, not blocking: the default base URL is the test host (see sessions/1.a.i.zo.md, Part 2). Phase 2 leaves 2.b.i.zi and 2.b.i.zo are the owner's evidence gate; every Phase 3 leaf waits behind them. 5.b.ii.zi is the owner's.
 ```
