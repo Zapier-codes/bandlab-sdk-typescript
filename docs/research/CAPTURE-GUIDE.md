@@ -12,7 +12,7 @@
 
 1. **Your own account only.** Never capture while viewing other people's private messages or data. For anything that needs a second person (messages, collaborators), use **a second account that you also own**.
 2. **Start recording after you log in.** The login request contains your password. Never capture it, and never share a capture that contains it.
-3. **A raw HAR contains your secrets** (access tokens, cookies, your email, your ids). **Do not send a raw HAR to anyone, including me, and do not commit one.** A scrubbing tool is built in leaf `2.a.ii.zi`. Until it exists, keep captures on your own device.
+3. **A raw HAR contains your secrets** (access tokens, cookies, your email, your ids). **Do not send a raw HAR to anyone, including me, and do not commit one.** Scrub every capture with `scripts/research/scrub-har.py` and check it (`docs/research/HAND-BACK.md`, section 4) before it goes anywhere.
 4. **Destructive actions: use a throwaway.** For G05 (delete revision), G09 (change email) and G10 (delete account), use a throwaway account or throwaway content. **Do not delete your real account to produce a capture.** If you have no throwaway account, skip G10 and say so.
 5. **One action per capture file.** Small, focused files are far easier to use than one long recording. Clear the log between actions.
 6. **No payments or subscriptions.** Do not capture purchase or billing screens.
@@ -86,5 +86,5 @@ Do these in any order. For each one: clear the log, start from a normal page, do
 
 1. Keep the files on your device. **Do not send raw HARs** (rule 3).
 2. For each capture keep your one-line note: what you did, the date, what happened.
-3. The hand-back format (folder layout, file names, and a checklist you tick) comes with leaf `2.a.i.zo`; the scrubbing script that removes tokens and personal data comes with leaf `2.a.ii.zi`; the extractor that turns captures into endpoint descriptions comes with `2.a.ii.zo`. Do the captures any time. They stay valid, but send nothing until the scrubber exists.
+3. The hand-back format (folder layout, file names, and a checklist you tick) is in `HAND-BACK.md` and `CAPTURE-CHECKLIST.md`. The scrubbing script that removes tokens and personal data is `scripts/research/scrub-har.py`; the extractor that turns captures into endpoint descriptions comes with leaf `2.a.ii.zo`. Do the captures any time, scrub and check each one, and send only the scrubbed files.
 4. The session that triages them (`2.b.i.zi`) will mark each G-item as captured, missing or blocked. **"The app has no such action" is a valid and useful result.**
