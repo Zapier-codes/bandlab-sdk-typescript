@@ -13,3 +13,6 @@ dist-deno
 # research: raw captures contain secrets and must never be committed (see docs/research/HAND-BACK.md)
 docs/research/raw/
 *.raw.har
+
+# python bytecode from scripts/research
+__pycache__/
