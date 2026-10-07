@@ -17,3 +17,4 @@ Never rewrite or reorder lines.
 - 2.a.i.zi — wrote docs/research/CAPTURE-GUIDE.md (capture tasks for G01 to G14 plus the base-host check P0, HAR export steps, safety rules; written from memory without BandLab access); 5 done of 47
 - 2.a.i.zo — wrote docs/research/HAND-BACK.md and the 42-row CAPTURE-CHECKLIST.md, git-ignored raw captures, defined the three hand-back routes and the scrubber requirements; 6 done of 47
 - 2.a.ii.zi — added scripts/research/scrub-har.py (scrubber plus structured --check, stdlib only), a synthetic fixture and 24 tests; replaced the false-alarm keyword check in HAND-BACK.md; 7 done of 47
+- 2.a.ii.zo — added scripts/research/har-to-endpoints.py (endpoint shapes from scrubbed captures, flags what the SDK lacks, refuses unscrubbed input) and 20 mutation-checked tests; 44 python tests total; next leaf is blocked on owner evidence; 8 done of 47

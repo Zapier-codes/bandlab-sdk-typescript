@@ -50,7 +50,7 @@ Phase        1, 2, 3, 4, 5
 - [x] 5 — `2.a.i.zi` `docs/research/CAPTURE-GUIDE.md`
 - [x] 6 — `2.a.i.zo` Evidence hand-back format
 - [x] 7 — `2.a.ii.zi` `scripts/research/scrub-har.py` and a synthetic fixture
-- [ ] 8 — `2.a.ii.zo` `scripts/research/har-to-endpoints.py` and a fixture
+- [x] 8 — `2.a.ii.zo` `scripts/research/har-to-endpoints.py` and a fixture
 - [ ] 9 — `2.b.i.zi` Run the tools on the owner's evidence and set a status per G-item *(owner's leaf)*
 - [ ] 10 — `2.b.i.zo` Record the final resource design *(owner's leaf)*
 
@@ -100,7 +100,7 @@ Phase        1, 2, 3, 4, 5
 - [ ] 46 — `5.b.i.zo` Owner steps document
 - [ ] 47 — `5.b.ii.zi` Owner confirms the first CI run published the image and it pulls and runs *(owner's leaf)*
 
-**Done so far: 7 of 47.** History of M: set at 47 on 2026-10-03 (no splits yet).
+**Done so far: 8 of 47.** History of M: set at 47 on 2026-10-03 (no splits yet).
 
 **Reporting rule:** a session that completes a leaf ends its final message with `N done ✅ of M`, read off this checklist **after** the session. One that completes none says `No new leaf completed — still N done of M`, with the reason. The tick, the count, Current position and the ledger line go in the leaf's own final commit, so the patch and the count can never disagree.
 
@@ -109,16 +109,16 @@ Phase        1, 2, 3, 4, 5
 ## 1a. Current position
 
 ```yaml
-CURRENT_LEAF: 2.a.ii.zo
-CURRENT_LEAF_TITLE: scripts/research/har-to-endpoints.py and a fixture
-CURRENT_LEAF_SPEC: docs/handover/TASKS.md  ->  "2.a.ii.zo"  (read sessions/2.a.ii.zi.md "Next leaf" first)
-FOCUS_RUN: "7 done of 47"
-LAST_COMPLETED_LEAF: 2.a.ii.zi
-MARKER_COMMIT_SUBJECT_PREFIX: "2.a.ii.zi:"
-LAST_PATCH_NAME: 0008-2.a.ii.zi-har-scrubber-and-checker.patch
-NEXT_PATCH_NUMBER: "0009"
-STATUS: READY
-BLOCKERS: None for Phase 1 (complete). Owner decision pending, not blocking: the default base URL is the test host (see sessions/1.a.i.zo.md, Part 2). Phase 2 leaves 2.b.i.zi and 2.b.i.zo are the owner's evidence gate; every Phase 3 leaf waits behind them. 5.b.ii.zi is the owner's.
+CURRENT_LEAF: 2.b.i.zi
+CURRENT_LEAF_TITLE: Run the tools on the owner's evidence and set a status per G-item
+CURRENT_LEAF_SPEC: docs/handover/TASKS.md  ->  "2.b.i.zi"  (read sessions/2.a.ii.zo.md "Next leaf" first)
+FOCUS_RUN: "8 done of 47"
+LAST_COMPLETED_LEAF: 2.a.ii.zo
+MARKER_COMMIT_SUBJECT_PREFIX: "2.a.ii.zo:"
+LAST_PATCH_NAME: 0009-2.a.ii.zo-endpoint-extractor.patch
+NEXT_PATCH_NUMBER: "0010"
+STATUS: BLOCKED_ON_OWNER
+BLOCKERS: 2.b.i.zi needs evidence from the owner and cannot start without it. Any of - P0 (the API host the BandLab site calls); scrubbed captures per docs/research/CAPTURE-CHECKLIST.md handed back as in docs/research/HAND-BACK.md (priority G04, G09, G02, G01, G03); an explicit "no such action" or "skipped" per row; or the OpenAPI spec's servers block. Every Phase 3 leaf waits behind 2.b.i.zo. OWNER DECISION NEEDED to avoid idling - approve pulling Phase 5 (container image, 5.a.i.zi onward) forward, since it needs no evidence. Open, not blocking - desktop browser or phone only; preferred hand-back route; default base URL is the test host (sessions/1.a.i.zo.md Part 2). 5.b.ii.zi is the owner's.
 ```
 
 **Sanity check at session start:**
