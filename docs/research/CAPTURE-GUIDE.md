@@ -86,5 +86,5 @@ Do these in any order. For each one: clear the log, start from a normal page, do
 
 1. Keep the files on your device. **Do not send raw HARs** (rule 3).
 2. For each capture keep your one-line note: what you did, the date, what happened.
-3. The hand-back format (folder layout, file names, and a checklist you tick) is in `HAND-BACK.md` and `CAPTURE-CHECKLIST.md`. The scrubbing script that removes tokens and personal data is `scripts/research/scrub-har.py`; the extractor that turns captures into endpoint descriptions comes with leaf `2.a.ii.zo`. Do the captures any time, scrub and check each one, and send only the scrubbed files.
+3. The hand-back format (folder layout, file names, and a checklist you tick) is in `HAND-BACK.md` and `CAPTURE-CHECKLIST.md`. The scrubbing script that removes tokens and personal data is `scripts/research/scrub-har.py`; the extractor `scripts/research/har-to-endpoints.py` turns scrubbed captures into endpoint descriptions. Do the captures any time, scrub and check each one, and send only the scrubbed files.
 4. The session that triages them (`2.b.i.zi`) will mark each G-item as captured, missing or blocked. **"The app has no such action" is a valid and useful result.**

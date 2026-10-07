@@ -16,7 +16,7 @@ docs/research/
 ├── captures/               SCRUBBED evidence only; this is the only place evidence is committed
 ├── raw/                    optional, local only: if you keep raw HARs inside your clone, keep them here.
 │                           Git ignores this folder, so a raw file cannot be committed from it by accident.
-└── endpoints/              created later by leaf 2.a.ii.zo: extracted endpoint descriptions per domain
+└── endpoints/              written by scripts/research/har-to-endpoints.py: endpoint descriptions per domain (generated; do not edit by hand)
 ```
 
 `.gitignore` also ignores any file named `*.raw.har`, so a raw file that is named as raw cannot be committed even outside `raw/`.
@@ -95,3 +95,5 @@ These were the requirements; `scripts/research/scrub-har.py` meets them, and `sc
 3. In `CAPTURE-CHECKLIST.md`, set *In repo* to `[x]` and fill *Result* and *Note* for each row the owner reported, including `no-such-action`, `not-capturable` and `skipped`.
 4. Commit it as `<current leaf path>: evidence intake, <files>`, with one commit per logical set, and mention it in that leaf's Done note.
 5. Evidence intake is **not a leaf**. It does not change N of M, and it does not triage anything. Triage (setting each G-item to captured, missing or blocked, and recording the resource design) stays in leaves `2.b.i.zi` and `2.b.i.zo`.
+
+**Extraction (part of triage, not of intake).** `python3 scripts/research/har-to-endpoints.py` reads every `.har` in `captures/`, **refuses all of them if any file fails the leak check** (nothing is written), and writes `docs/research/endpoints/<domain>.json`: method, host, path template (`{id}` for ids), query keys, header names, status codes, and the **shape** of JSON bodies (types only, never values; keys that appear in only some samples end in `?`). It prints which endpoints are **not in the SDK**, comparing against `docs/endpoint-status.md`. A path segment it cannot recognise as an id (for example a slug) will show up as a false "NOT in the SDK", so the triage leaf must look over that list by hand.
